@@ -2,6 +2,7 @@ package com.example.mvishowcase.feature.home.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvishowcase.core.base.BaseViewModel
+import com.example.mvishowcase.domain.model.Country
 import com.example.mvishowcase.domain.usecase.GetCountriesUseCase
 import kotlinx.coroutines.launch
 

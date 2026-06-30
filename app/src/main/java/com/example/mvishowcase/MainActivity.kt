@@ -14,17 +14,15 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Manual DI: Get the AppContainer from the Application class
         val appContainer = (application as MviApplication).appContainer
         
-        // Feature-scoped DI: Create the HomeContainer
         val homeContainer = HomeContainer(appContainer.countryRepository)
         
         enableEdgeToEdge()
         setContent {
             MviShowcaseTheme {
                 val homeViewModel: HomeViewModel = viewModel(
-                    factory = homeContainer.provideHomeViewModelFactory()
+                    factory = homeContainer.viewModelFactory
                 )
                 HomeScreen(viewModel = homeViewModel)
             }
