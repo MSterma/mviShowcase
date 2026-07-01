@@ -15,7 +15,7 @@ Changed default .gitignore to  some found on the internet (general purpose .giti
  
 ### Fixed
 
-##  2026-06-30
+##  2026-06-30 - task/initapp
 
 Further reading about MVI.
 Tried implementing List-Detail with mock data as HomeScreen
@@ -68,6 +68,20 @@ MVI - added app container initialization
 MainActivity - getting App Container and initializing Home Container with it's repo field.
 
 ### Fixed
- 
 
+
+##  2026-06-30 - task/fetching-countries-from-rest-api
+Implemented fetching data in json format  from external REST API using KTOR.
+The data is then serialized to data class object and then mapped to match country object in domain.
+
+### added
+NetworkClient - KTOR network client to handle requests to API
+CountryDTO - Country Data Transfer Object - Kotlin object serialized from response
+CountryMapper - maps countryDTO to match country class in domain.
+CountryRepositoryImpl - concrete implementation that provides that from API
+
+### Changed
+AppContainer - added injecting client and bearer token to repo
+HomeScreen - changed how list is displayed and added coil to render images asynchronously 
+libs.version.toml - added required dependencies 
 

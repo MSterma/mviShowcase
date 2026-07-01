@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.mvishowcase.domain.model.Country
 import com.example.mvishowcase.feature.home.presentation.HomeIntent
 import com.example.mvishowcase.feature.home.presentation.HomeState
@@ -79,6 +80,13 @@ fun CountryList(countries: List<Country>, onCountryClick: (Country) -> Unit) {
         items(countries) { country ->
             ListItem(
                 headlineContent = { Text(country.name) },
+                leadingContent = {
+                    AsyncImage(
+                        model = country.flag,
+                        contentDescription = "Flag of ${country.name}",
+                        modifier = Modifier.size(40.dp)
+                    )
+                },
                 modifier = Modifier.clickable { onCountryClick(country) }
             )
             HorizontalDivider()
@@ -95,7 +103,13 @@ fun CountryDetail(country: Country, onBack: () -> Unit) {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = country.flag, fontSize = 64.sp)
+        AsyncImage(
+            model = country.flag,
+            contentDescription = "Flag of ${country.name}",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+        )
         Spacer(modifier = Modifier.height(16.dp))
         Text(text = country.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(8.dp))
