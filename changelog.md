@@ -76,12 +76,50 @@ The data is then serialized to data class object and then mapped to match countr
 
 ### added
 NetworkClient - KTOR network client to handle requests to API
+
 CountryDTO - Country Data Transfer Object - Kotlin object serialized from response
+
 CountryMapper - maps countryDTO to match country class in domain.
+
 CountryRepositoryImpl - concrete implementation that provides that from API
 
 ### Changed
 AppContainer - added injecting client and bearer token to repo
+
 HomeScreen - changed how list is displayed and added coil to render images asynchronously 
+
 libs.version.toml - added required dependencies 
+
+##  2026-06-1 - task/fetching-countries-from-rest-api
+
+Implemented paginated list of countries and search mechanism with default compose search bar
+
+### Addded
+
+SearchCountriesUseCase.kt - New use case. Used for searching and default list.
+
+### Changed
+CountryRepositoryImpl.kt - changed method from getCountries to searchCountries. 
+
+FakeCountryRepositoryImp.kt - implemented mock searchCountries
+
+CountryRepository.kt - adjusted interface to fit new searchCountries method
+
+HomeContainer.kt  - injecting new UseCase
+
+HomeState.kt - add fields  to support pagination and querying (isPaginateLoading, current offset and boolean indicating whether all countries have been fetched )
+
+HomeIntent.kt - add actions indicating need to fetch more countries or change in search query
+
+HomeViewModel.kt -  added Job (cancellable background task) to handle search bar dynamically 
+
+HomeScreen.kt - Implemented pagination and searching into UI by:
+
+* printing loading indicator while waiting for next countries to be loaded
+* adding default compose searchbar to handle searching
+
+### Removed
+
+GetCountriesUseCase.kt - not needed anymore. I'm using searchCountries with empty query instead.
+
 
