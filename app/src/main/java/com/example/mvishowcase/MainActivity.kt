@@ -4,44 +4,28 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.mvishowcase.feature.home.di.HomeContainer
+import com.example.mvishowcase.feature.home.presentation.HomeViewModel
+import com.example.mvishowcase.feature.home.ui.HomeScreen
 import com.example.mvishowcase.ui.theme.MviShowcaseTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        val appContainer = (application as MviApplication).appContainer
+        
+        val homeContainer = HomeContainer(appContainer.countryRepository)
+        
         enableEdgeToEdge()
         setContent {
             MviShowcaseTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
+                val homeViewModel: HomeViewModel = viewModel(
+                    factory = homeContainer.viewModelFactory
+                )
+                HomeScreen(viewModel = homeViewModel)
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MviShowcaseTheme {
-        Greeting("Android")
     }
 }
