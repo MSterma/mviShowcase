@@ -16,11 +16,7 @@ class CountryRepositoryImpl(
 ) : CountryRepository {
 
     override suspend fun searchCountries(query: String, limit: Int, offset: Int): List<Country> {
-        val endpoint = if (query.isEmpty()) {
-            "https://api.restcountries.com/countries/v5"
-        } else {
-            "https://api.restcountries.com/countries/v5/name"
-        }
+        val endpoint = "https://api.restcountries.com/countries/v5"
 
         val response: CountryResponse = httpClient.get(endpoint) {
             header(HttpHeaders.Authorization, "Bearer $bearerToken")

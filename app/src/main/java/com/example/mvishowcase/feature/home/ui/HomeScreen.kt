@@ -7,7 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
@@ -24,7 +24,7 @@ import com.example.mvishowcase.domain.model.Country
 import com.example.mvishowcase.feature.home.presentation.HomeIntent
 import com.example.mvishowcase.feature.home.presentation.HomeState
 import com.example.mvishowcase.feature.home.presentation.HomeViewModel
-import com.example.mvishowcase.ui.theme.MviShowcaseTheme
+import androidx.compose.material.icons.filled.Close
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
@@ -44,21 +44,55 @@ fun HomeContent(
 ) {
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(if (state.selectedCountry != null) "Country Details" else "Countries") },
-                navigationIcon = {
-                    if (state.selectedCountry != null) {
+            if (state.selectedCountry != null) {
+                TopAppBar(
+                    title = { Text("Country Details") },
+                    navigationIcon = {
                         IconButton(onClick = { onIntent(HomeIntent.ClearSelection) }) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                    }
+                )
+            } else {
+                Surface(
+                    tonalElevation = 3.dp,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth().statusBarsPadding()) {
+                        SearchBar(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            inputField = {
+                                SearchBarDefaults.InputField(
+                                    query = state.searchQuery,
+                                    onQueryChange = { onIntent(HomeIntent.SearchQueryChanged(it)) },
+                                    onSearch = {  },
+                                    expanded = false,
+                                    onExpandedChange = { },
+                                    placeholder = { Text("Search countries...") },
+                                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                                    trailingIcon = {
+                                        if (state.searchQuery.isNotEmpty()) {
+                                            IconButton(onClick = { onIntent(HomeIntent.SearchQueryChanged("")) }) {
+                                                Icon(Icons.Default.Close, contentDescription = "Clear")
+                                            }
+                                        }
+                                    }
+                                )
+                            },
+                            expanded = false,
+                            onExpandedChange = { },
+                        ) {
                         }
                     }
                 }
-            )
+            }
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             when {
-                state.isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                state.isLoading && state.countries.isEmpty() -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 state.errorMessage != null && state.countries.isEmpty() -> Text(
                     text = state.errorMessage,
                     color = Color.Red,

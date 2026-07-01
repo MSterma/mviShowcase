@@ -4,13 +4,17 @@ import androidx.lifecycle.viewModelScope
 import com.example.mvishowcase.core.base.BaseViewModel
 import com.example.mvishowcase.domain.model.Country
 import com.example.mvishowcase.domain.usecase.SearchCountriesUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.milliseconds
 
 class HomeViewModel(
     private val searchCountriesUseCase: SearchCountriesUseCase
 ) : BaseViewModel<HomeState, HomeIntent, HomeEffect>(HomeState()) {
 
     private val pageSize = 25
+    private var searchJob: Job? = null
 
     init {
         onIntent(HomeIntent.LoadCountries)
@@ -22,14 +26,25 @@ class HomeViewModel(
             is HomeIntent.LoadNextPage -> loadNextPage()
             is HomeIntent.SelectCountry -> selectCountry(intent.country)
             is HomeIntent.ClearSelection -> clearSelection()
+            is HomeIntent.SearchQueryChanged -> onSearchQueryChanged(intent.query)
+        }
+    }
+
+    private fun onSearchQueryChanged(query: String) {
+        setState { copy(searchQuery = query) }
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            delay(200.milliseconds)
+            loadCountries()
         }
     }
 
     private fun loadCountries() {
         viewModelScope.launch {
+            val query = uiState.value.searchQuery
             setState { copy(isLoading = true, errorMessage = null, offset = 0, hasReachedEnd = false) }
             try {
-                val countries = searchCountriesUseCase(limit = pageSize, offset = 0)
+                val countries = searchCountriesUseCase(query = query, limit = pageSize, offset = 0)
                 setState { 
                     copy(
                         isLoading = false, 
@@ -52,7 +67,11 @@ class HomeViewModel(
         viewModelScope.launch {
             setState { copy(isPaginateLoading = true) }
             try {
-                val newCountries = searchCountriesUseCase(limit = pageSize, offset = currentState.offset)
+                val newCountries = searchCountriesUseCase(
+                    query = currentState.searchQuery,
+                    limit = pageSize, 
+                    offset = currentState.offset
+                )
                 setState { 
                     copy(
                         isPaginateLoading = false, 

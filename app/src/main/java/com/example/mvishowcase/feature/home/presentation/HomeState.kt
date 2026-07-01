@@ -9,6 +9,7 @@ data class HomeState(
     val countries: List<Country> = emptyList(),
     val selectedCountry: Country? = null,
     val errorMessage: String? = null,
+    val searchQuery: String = "",
     val offset: Int = 0,
     val hasReachedEnd: Boolean = false
 ) : UiState
