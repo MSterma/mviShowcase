@@ -15,9 +15,22 @@ class CountryRepositoryImpl(
     private val bearerToken: String
 ) : CountryRepository {
 
-    override suspend fun getCountries(): List<Country> {
-        val response: CountryResponse = httpClient.get("https://api.restcountries.com/countries/v5") {
+    override suspend fun searchCountries(query: String, limit: Int, offset: Int): List<Country> {
+        val endpoint = if (query.isEmpty()) {
+            "https://api.restcountries.com/countries/v5"
+        } else {
+            "https://api.restcountries.com/countries/v5/name"
+        }
+
+        val response: CountryResponse = httpClient.get(endpoint) {
             header(HttpHeaders.Authorization, "Bearer $bearerToken")
+            url {
+                if (query.isNotEmpty()) {
+                    parameters.append("q", query)
+                }
+                parameters.append("limit", limit.toString())
+                parameters.append("offset", offset.toString())
+            }
         }.body()
 
         return response.data.objects.map { it.toDomain() }

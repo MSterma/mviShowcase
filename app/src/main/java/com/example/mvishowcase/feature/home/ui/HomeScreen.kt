@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -12,11 +13,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.example.mvishowcase.domain.model.Country
 import com.example.mvishowcase.feature.home.presentation.HomeIntent
 import com.example.mvishowcase.feature.home.presentation.HomeState
@@ -56,7 +59,7 @@ fun HomeContent(
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
             when {
                 state.isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                state.errorMessage != null -> Text(
+                state.errorMessage != null && state.countries.isEmpty() -> Text(
                     text = state.errorMessage,
                     color = Color.Red,
                     modifier = Modifier.align(Alignment.Center)
@@ -67,7 +70,9 @@ fun HomeContent(
                 )
                 else -> CountryList(
                     countries = state.countries,
-                    onCountryClick = { onIntent(HomeIntent.SelectCountry(it)) }
+                    isPaginateLoading = state.isPaginateLoading,
+                    onCountryClick = { onIntent(HomeIntent.SelectCountry(it)) },
+                    onLoadMore = { onIntent(HomeIntent.LoadNextPage) }
                 )
             }
         }
@@ -75,14 +80,36 @@ fun HomeContent(
 }
 
 @Composable
-fun CountryList(countries: List<Country>, onCountryClick: (Country) -> Unit) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(countries) { country ->
+fun CountryList(
+    countries: List<Country>,
+    isPaginateLoading: Boolean,
+    onCountryClick: (Country) -> Unit,
+    onLoadMore: () -> Unit
+) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastVisibleIndex ->
+                if (lastVisibleIndex != null && lastVisibleIndex >= countries.size - 5) {
+                    onLoadMore()
+                }
+            }
+    }
+
+    LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
+        items(
+            items = countries,
+            key = { it.id }
+        ) { country ->
             ListItem(
                 headlineContent = { Text(country.name) },
                 leadingContent = {
                     AsyncImage(
-                        model = country.flag,
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(country.flag)
+                            .crossfade(true)
+                            .build(),
                         contentDescription = "Flag of ${country.name}",
                         modifier = Modifier.size(40.dp)
                     )
@@ -90,6 +117,19 @@ fun CountryList(countries: List<Country>, onCountryClick: (Country) -> Unit) {
                 modifier = Modifier.clickable { onCountryClick(country) }
             )
             HorizontalDivider()
+        }
+
+        if (isPaginateLoading) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                }
+            }
         }
     }
 }
@@ -104,7 +144,10 @@ fun CountryDetail(country: Country, onBack: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AsyncImage(
-            model = country.flag,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(country.flag)
+                .crossfade(true)
+                .build(),
             contentDescription = "Flag of ${country.name}",
             modifier = Modifier
                 .fillMaxWidth()
@@ -117,4 +160,3 @@ fun CountryDetail(country: Country, onBack: () -> Unit) {
         Text(text = "Population: ${country.population}")
     }
 }
-
