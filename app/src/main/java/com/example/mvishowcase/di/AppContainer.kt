@@ -9,7 +9,7 @@ class AppContainer {
     val countryRepository: CountryRepository by lazy {
         CountryRepositoryImpl(
             httpClient = networkClient.httpClient,
-            bearerToken = ""
+            bearerToken = "rc_live_e9ae0cac106a42d08439273200fded44"
         )
     }
 }

@@ -42,27 +42,34 @@ class HomeViewModel(
     private fun loadCountries() {
         viewModelScope.launch {
             val query = uiState.value.searchQuery
-            setState { copy(isLoading = true, errorMessage = null, offset = 0, hasReachedEnd = false) }
+            setState { 
+                copy(
+                    uiState = HomeUiState.Loading,
+                    offset = 0, 
+                    hasReachedEnd = false
+                ) 
+            }
             try {
                 val countries = searchCountriesUseCase(query = query, limit = pageSize, offset = 0)
                 setState { 
                     copy(
-                        isLoading = false, 
+                        uiState = HomeUiState.Success, 
                         countries = countries, 
                         offset = countries.size,
                         hasReachedEnd = countries.size < pageSize
                     ) 
                 }
             } catch (e: Exception) {
-                setState { copy(isLoading = false, errorMessage = e.message) }
-                sendEffect(HomeEffect.ShowError(e.message ?: "Unknown error"))
+                val errorMessage = e.message ?: "Unknown error"
+                setState { copy(uiState = HomeUiState.Error(errorMessage)) }
+                sendEffect(HomeEffect.ShowError(errorMessage))
             }
         }
     }
 
     private fun loadNextPage() {
         val currentState = uiState.value
-        if (currentState.isLoading || currentState.isPaginateLoading || currentState.hasReachedEnd) return
+        if (currentState.uiState == HomeUiState.Loading || currentState.isPaginateLoading || currentState.hasReachedEnd) return
 
         viewModelScope.launch {
             setState { copy(isPaginateLoading = true) }

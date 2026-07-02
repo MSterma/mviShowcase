@@ -25,6 +25,7 @@ import com.example.mvishowcase.feature.home.presentation.HomeIntent
 import com.example.mvishowcase.feature.home.presentation.HomeState
 import com.example.mvishowcase.feature.home.presentation.HomeViewModel
 import androidx.compose.material.icons.filled.Close
+import com.example.mvishowcase.feature.home.presentation.HomeUiState
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
@@ -91,23 +92,32 @@ fun HomeContent(
         }
     ) { padding ->
         Box(modifier = Modifier.padding(padding).fillMaxSize()) {
-            when {
-                state.isLoading && state.countries.isEmpty() -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                state.errorMessage != null && state.countries.isEmpty() -> Text(
-                    text = state.errorMessage,
-                    color = Color.Red,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-                state.selectedCountry != null -> CountryDetail(
+            if (state.selectedCountry != null) {
+                CountryDetail(
                     country = state.selectedCountry,
                     onBack = { onIntent(HomeIntent.ClearSelection) }
                 )
-                else -> CountryList(
-                    countries = state.countries,
-                    isPaginateLoading = state.isPaginateLoading,
-                    onCountryClick = { onIntent(HomeIntent.SelectCountry(it)) },
-                    onLoadMore = { onIntent(HomeIntent.LoadNextPage) }
-                )
+            } else {
+                when (val uiState = state.uiState) {
+                    is HomeUiState.Loading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                    is HomeUiState.Error -> {
+                        Text(
+                            text = uiState.message,
+                            color = Color.Red,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                    is HomeUiState.Success -> {
+                        CountryList(
+                            countries = state.countries,
+                            isPaginateLoading = state.isPaginateLoading,
+                            onCountryClick = { onIntent(HomeIntent.SelectCountry(it)) },
+                            onLoadMore = { onIntent(HomeIntent.LoadNextPage) }
+                        )
+                    }
+                }
             }
         }
     }
