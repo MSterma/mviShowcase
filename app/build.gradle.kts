@@ -75,6 +75,13 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     
+    // Navigation 3
+    implementation(libs.androidx.navigation3.runtime)
+    implementation(libs.androidx.navigation3.ui)
+
+    // Icons
+    implementation("androidx.compose.material:material-icons-extended")
+    
     // Serialization
     implementation(libs.kotlinx.serialization.json)
 

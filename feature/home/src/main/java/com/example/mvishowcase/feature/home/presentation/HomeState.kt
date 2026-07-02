@@ -6,7 +6,6 @@ import com.example.mvishowcase.core.model.Country
 data class HomeState(
     val uiState: HomeUiState = HomeUiState.Idle,
     val countries: List<Country> = emptyList(),
-    val selectedCountry: Country? = null,
     val searchQuery: String = "",
     val offset: Int = 0,
     val isPaginateLoading: Boolean = false,

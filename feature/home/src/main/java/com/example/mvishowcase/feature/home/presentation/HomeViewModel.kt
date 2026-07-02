@@ -26,7 +26,6 @@ class HomeViewModel(
             is HomeIntent.LoadCountries -> loadCountries()
             is HomeIntent.LoadNextPage -> loadNextPage()
             is HomeIntent.SelectCountry -> selectCountry(intent.country)
-            is HomeIntent.ClearSelection -> clearSelection()
             is HomeIntent.SearchQueryChanged -> onSearchQueryChanged(intent.query)
         }
     }
@@ -104,10 +103,6 @@ class HomeViewModel(
     }
 
     private fun selectCountry(country: Country) {
-        setState { copy(selectedCountry = country) }
-    }
-
-    private fun clearSelection() {
-        setState { copy(selectedCountry = null) }
+        sendEffect(HomeEffect.NavigateToDetails(country))
     }
 }
