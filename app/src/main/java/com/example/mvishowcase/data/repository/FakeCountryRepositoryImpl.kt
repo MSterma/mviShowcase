@@ -1,5 +1,6 @@
 package com.example.mvishowcase.data.repository
 
+import com.example.mvishowcase.core.util.DataResult
 import com.example.mvishowcase.domain.model.Country
 import com.example.mvishowcase.domain.repository.CountryRepository
 
@@ -12,12 +13,13 @@ class FakeCountryRepositoryImpl : CountryRepository {
         Country("5", "Spain", "🇪🇸", "Madrid", 47000000)
     )
 
-    override suspend fun searchCountries(query: String, limit: Int, offset: Int): List<Country> {
+    override suspend fun searchCountries(query: String, limit: Int, offset: Int): DataResult<List<Country>> {
         val filtered = if (query.isEmpty()) {
             allCountries
         } else {
             allCountries.filter { it.name.contains(query, ignoreCase = true) }
         }
-        return filtered.drop(offset).take(limit)
+        val result = filtered.drop(offset).take(limit)
+        return DataResult.Success(result)
     }
 }

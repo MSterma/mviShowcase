@@ -2,6 +2,7 @@ package com.example.mvishowcase.feature.home.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvishowcase.core.base.BaseViewModel
+import com.example.mvishowcase.core.util.DataResult
 import com.example.mvishowcase.domain.model.Country
 import com.example.mvishowcase.domain.usecase.SearchCountriesUseCase
 import kotlinx.coroutines.Job
@@ -49,20 +50,24 @@ class HomeViewModel(
                     hasReachedEnd = false
                 ) 
             }
-            try {
-                val countries = searchCountriesUseCase(query = query, limit = pageSize, offset = 0)
-                setState { 
-                    copy(
-                        uiState = HomeUiState.Success, 
-                        countries = countries, 
-                        offset = countries.size,
-                        hasReachedEnd = countries.size < pageSize
-                    ) 
+            
+            when (val result = searchCountriesUseCase(query = query, limit = pageSize, offset = 0)) {
+                is DataResult.Success -> {
+                    val countries = result.data
+                    setState { 
+                        copy(
+                            uiState = HomeUiState.Success, 
+                            countries = countries, 
+                            offset = countries.size,
+                            hasReachedEnd = countries.size < pageSize
+                        ) 
+                    }
                 }
-            } catch (e: Exception) {
-                val errorMessage = e.message ?: "Unknown error"
-                setState { copy(uiState = HomeUiState.Error(errorMessage)) }
-                sendEffect(HomeEffect.ShowError(errorMessage))
+                is DataResult.Error -> {
+                    val errorMessage = result.throwable.message ?: "Unknown error"
+                    setState { copy(uiState = HomeUiState.Error(errorMessage)) }
+                    sendEffect(HomeEffect.ShowError(errorMessage))
+                }
             }
         }
     }
@@ -73,23 +78,27 @@ class HomeViewModel(
 
         viewModelScope.launch {
             setState { copy(isPaginateLoading = true) }
-            try {
-                val newCountries = searchCountriesUseCase(
-                    query = currentState.searchQuery,
-                    limit = pageSize, 
-                    offset = currentState.offset
-                )
-                setState { 
-                    copy(
-                        isPaginateLoading = false, 
-                        countries = countries + newCountries, 
-                        offset = offset + newCountries.size,
-                        hasReachedEnd = newCountries.size < pageSize
-                    ) 
+            
+            when (val result = searchCountriesUseCase(
+                query = currentState.searchQuery,
+                limit = pageSize, 
+                offset = currentState.offset
+            )) {
+                is DataResult.Success -> {
+                    val newCountries = result.data
+                    setState { 
+                        copy(
+                            isPaginateLoading = false, 
+                            countries = countries + newCountries, 
+                            offset = offset + newCountries.size,
+                            hasReachedEnd = newCountries.size < pageSize
+                        ) 
+                    }
                 }
-            } catch (e: Exception) {
-                setState { copy(isPaginateLoading = false) }
-                sendEffect(HomeEffect.ShowError(e.message ?: "Unknown error"))
+                is DataResult.Error -> {
+                    setState { copy(isPaginateLoading = false) }
+                    sendEffect(HomeEffect.ShowError(result.throwable.message ?: "Unknown error"))
+                }
             }
         }
     }
