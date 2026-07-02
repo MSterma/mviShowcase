@@ -8,7 +8,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.mvishowcase.feature.home.di.HomeContainer
 import com.example.mvishowcase.feature.home.presentation.HomeViewModel
 import com.example.mvishowcase.feature.home.ui.HomeScreen
-import com.example.mvishowcase.ui.theme.MviShowcaseTheme
+import com.example.mvishowcase.core.ui.theme.MviShowcaseTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
