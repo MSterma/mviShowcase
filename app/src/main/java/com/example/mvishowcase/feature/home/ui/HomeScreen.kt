@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.mvishowcase.domain.model.Country
 import com.example.mvishowcase.feature.home.presentation.HomeIntent
 import com.example.mvishowcase.feature.home.presentation.HomeState
@@ -29,7 +30,7 @@ import com.example.mvishowcase.feature.home.presentation.HomeUiState
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
-    val state by viewModel.uiState.collectAsState()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeContent(
         state = state,
