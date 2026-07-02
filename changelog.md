@@ -90,7 +90,7 @@ HomeScreen - changed how list is displayed and added coil to render images async
 
 libs.version.toml - added required dependencies 
 
-##  2026-06-1 - task/fetching-countries-from-rest-api
+##  2026-07-1 - task/fetching-countries-from-rest-api
 
 Implemented paginated list of countries and search mechanism with default compose search bar
 
@@ -123,3 +123,10 @@ HomeScreen.kt - Implemented pagination and searching into UI by:
 GetCountriesUseCase.kt - not needed anymore. I'm using searchCountries with empty query instead.
 
 
+##  2026-07-2 - task/fetching-countries-from-rest-api
+Created sealed interface HomeUIState that helps managing UI state by making code cleaner
+### Added 
+HomeUIState - sealed interface that keeps UI state
+### changed
+HomeState - removed Ui state variables and added ui state instance
+HomeScreen - Added when statement that determines ui state (what to draw)
