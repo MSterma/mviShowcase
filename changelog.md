@@ -127,6 +127,17 @@ GetCountriesUseCase.kt - not needed anymore. I'm using searchCountries with empt
 Created sealed interface HomeUIState that helps managing UI state by making code cleaner
 ### Added 
 HomeUIState - sealed interface that keeps UI state
-### changed
+DataResult - sealed interfaced used for API response enumeration
+### Changed
 HomeState - removed Ui state variables and added ui state instance
 HomeScreen - Added when statement that determines ui state (what to draw)
+NetworkClient - Now uses OkHttpClient.builder() to generate engine
+
+##  2026-07-2 - task/modular-architecture
+Restructured packages to modules according to MVI/UDF clean architecture.
+Also added nav3 to this pull request by mistake.
+### Added
+NavRoute - implemented routes and transitions
+### Changed
+MainActivity now uses nav3
+Restructured previous view model and data model to be suitable for nav3
