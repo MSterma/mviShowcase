@@ -24,3 +24,10 @@ dependencyResolutionManagement {
 
 rootProject.name = "mviShowcase"
 include(":app")
+include(":core:common")
+include(":core:model")
+include(":core:network")
+include(":core:domain")
+include(":core:data")
+include(":core:ui")
+include(":feature:home")
