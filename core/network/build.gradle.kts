@@ -19,6 +19,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.koin.core)
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.logging)
