@@ -1,5 +1,6 @@
 package com.example.mvishowcase.data.repository
 
+import com.example.mvishowcase.core.util.DataResult
 import com.example.mvishowcase.data.mapper.toDomain
 import com.example.mvishowcase.data.model.CountryResponse
 import com.example.mvishowcase.domain.model.Country
@@ -15,11 +16,24 @@ class CountryRepositoryImpl(
     private val bearerToken: String
 ) : CountryRepository {
 
-    override suspend fun getCountries(): List<Country> {
-        val response: CountryResponse = httpClient.get("https://api.restcountries.com/countries/v5") {
-            header(HttpHeaders.Authorization, "Bearer $bearerToken")
-        }.body()
+    override suspend fun searchCountries(query: String, limit: Int, offset: Int): DataResult<List<Country>> {
+        return try {
+            val endpoint = "https://api.restcountries.com/countries/v5"
 
-        return response.data.objects.map { it.toDomain() }
+            val response: CountryResponse = httpClient.get(endpoint) {
+                header(HttpHeaders.Authorization, "Bearer $bearerToken")
+                url {
+                    if (query.isNotEmpty()) {
+                        parameters.append("q", query)
+                    }
+                    parameters.append("limit", limit.toString())
+                    parameters.append("offset", offset.toString())
+                }
+            }.body()
+
+            DataResult.Success(response.data.objects.map { it.toDomain() })
+        } catch (e: Exception) {
+            DataResult.Error(e)
+        }
     }
 }

@@ -5,6 +5,8 @@ import com.example.mvishowcase.domain.model.Country
 
 sealed class HomeIntent : UiIntent {
     object LoadCountries : HomeIntent()
+    object LoadNextPage : HomeIntent()
     data class SelectCountry(val country: Country) : HomeIntent()
     object ClearSelection : HomeIntent()
+    data class SearchQueryChanged(val query: String) : HomeIntent()
 }
