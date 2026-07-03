@@ -18,6 +18,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.koin.core)
     implementation(project(":core:common"))
     implementation(project(":core:model"))
 }

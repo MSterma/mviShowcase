@@ -15,27 +15,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.example.mvishowcase.core.ui.theme.MviShowcaseTheme
-import com.example.mvishowcase.feature.home.di.HomeContainer
 import com.example.mvishowcase.feature.home.presentation.HomeEffect
 import com.example.mvishowcase.feature.home.presentation.HomeViewModel
 import com.example.mvishowcase.feature.home.ui.CountryDetail
 import com.example.mvishowcase.feature.home.ui.HomeScreen
 import com.example.mvishowcase.navigation.NavRoute
+import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.viewmodel.ext.android.getViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val appContainer = (application as MviApplication).appContainer
-        val homeContainer = HomeContainer(appContainer.countryRepository)
-
         enableEdgeToEdge()
         setContent {
             MviShowcaseTheme {
                 val backStack = remember { mutableStateListOf<Any>(NavRoute.Home) }
-                val homeViewModel: HomeViewModel = viewModel(
-                    factory = homeContainer.viewModelFactory
-                )
+                val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
 
                 NavDisplay(
                     backStack = backStack,
