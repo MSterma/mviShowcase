@@ -14,14 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
+import com.example.mvishowcase.core.ui.navigator.Navigator
 import com.example.mvishowcase.core.ui.theme.MviShowcaseTheme
 import com.example.mvishowcase.feature.home.presentation.HomeEffect
 import com.example.mvishowcase.feature.home.presentation.HomeViewModel
 import com.example.mvishowcase.feature.home.ui.CountryDetail
 import com.example.mvishowcase.feature.home.ui.HomeScreen
-import com.example.mvishowcase.navigation.NavRoute
+import navigator.NavRoute
 import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,31 +32,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MviShowcaseTheme {
-                val backStack = remember { mutableStateListOf<Any>(NavRoute.Home) }
+                val navigator: Navigator= koinInject()
                 val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
 
                 NavDisplay(
-                    backStack = backStack,
-                    onBack = {
-                        if (backStack.size > 1) {
-                            backStack.removeAt(backStack.lastIndex)
-                        } else {
-                            finish()
-                        }
-                    },
+                    backStack = navigator.backStack,
+                    onBack = {navigator.goBack()},
                     entryProvider = { key ->
                         when (key) {
                             is NavRoute.Home -> NavEntry(key) {
-                                LaunchedEffect(homeViewModel) {
-                                    homeViewModel.effect.collect { effect ->
-                                        when (effect) {
-                                            is HomeEffect.NavigateToDetails -> {
-                                                backStack.add(NavRoute.Details(effect.country))
-                                            }
-                                            else -> { /* Other effects handled inside screen if needed */ }
-                                        }
-                                    }
-                                }
 
                                 HomeScreen(viewModel = homeViewModel)
                             }
@@ -65,7 +51,7 @@ class MainActivity : ComponentActivity() {
                                         TopAppBar(
                                             title = { Text("Country Details") },
                                             navigationIcon = {
-                                                IconButton(onClick = { backStack.removeAt(backStack.lastIndex) }) {
+                                                IconButton(onClick = {navigator.goBack() }) {
                                                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                                                 }
                                             }
@@ -75,7 +61,7 @@ class MainActivity : ComponentActivity() {
                                     Surface(modifier = Modifier.padding(padding).fillMaxSize()) {
                                         CountryDetail(
                                             country = key.country,
-                                            onBack = { backStack.removeAt(backStack.lastIndex) }
+                                            onBack = { navigator.goBack() }
                                         )
                                     }
                                 }
