@@ -141,3 +141,23 @@ NavRoute - implemented routes and transitions
 ### Changed
 MainActivity now uses nav3
 Restructured previous view model and data model to be suitable for nav3
+
+##  2026-07-2 - task/replace-manual-di-with-Koin
+
+### Added
+DomainModule
+NetworkModule
+DataModule
+HomeModule 
+Modules that define Koin dependencies
+
+### Changed
+MviApplication
+MainActivity
+
+DI is now handled by Koin
+### Removed
+AppContainer
+HomeContainer
+Those are not needed anymore since Koin was added
+Unused import statement from app/build.gradle.kts
