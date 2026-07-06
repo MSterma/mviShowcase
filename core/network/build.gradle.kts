@@ -1,8 +1,17 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.library)
-    // id("org.jetbrains.kotlin.android")
     alias(libs.plugins.kotlin.serialization)
 }
+
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        localPropertiesFile.inputStream().use { load(it) }
+    }
+}
+val apiKey = localProperties.getProperty("rest_countries_api_key") ?: "\"\""
 
 android {
     namespace = "com.example.mvishowcase.core.network"
@@ -10,6 +19,11 @@ android {
 
     defaultConfig {
         minSdk = 24
+        buildConfigField("String", "REST_COUNTRIES_API_KEY", apiKey)
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     compileOptions {
