@@ -66,7 +66,7 @@ class HomeViewModel(
                         ) 
                     }
                 }
-                is DataResult.Error -> {
+                is DataResult.Failure -> {
                     val errorMessage = result.throwable.message ?: "Unknown error"
                     setState { copy(uiState = HomeUiState.Error(errorMessage)) }
                     sendEffect(HomeEffect.ShowError(errorMessage))
@@ -98,7 +98,7 @@ class HomeViewModel(
                         ) 
                     }
                 }
-                is DataResult.Error -> {
+                is DataResult.Failure -> {
                     setState { copy(isPaginateLoading = false) }
                     sendEffect(HomeEffect.ShowError(result.throwable.message ?: "Unknown error"))
                 }
