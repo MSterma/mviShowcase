@@ -5,13 +5,17 @@ import com.example.mvishowcase.core.common.mvi.BaseViewModel
 import com.example.mvishowcase.core.common.result.DataResult
 import com.example.mvishowcase.core.model.Country
 import com.example.mvishowcase.core.domain.usecase.SearchCountriesUseCase
+import com.example.mvishowcase.core.ui.navigator.Navigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import navigator.NavRoute
 import kotlin.time.Duration.Companion.milliseconds
 
 class HomeViewModel(
-    private val searchCountriesUseCase: SearchCountriesUseCase
+    private val searchCountriesUseCase: SearchCountriesUseCase,
+    private val navigator: Navigator
+
 ) : BaseViewModel<HomeState, HomeIntent, HomeEffect>(HomeState()) {
 
     private val pageSize = 25
@@ -62,7 +66,7 @@ class HomeViewModel(
                         ) 
                     }
                 }
-                is DataResult.Error -> {
+                is DataResult.Failure -> {
                     val errorMessage = result.throwable.message ?: "Unknown error"
                     setState { copy(uiState = HomeUiState.Error(errorMessage)) }
                     sendEffect(HomeEffect.ShowError(errorMessage))
@@ -94,7 +98,7 @@ class HomeViewModel(
                         ) 
                     }
                 }
-                is DataResult.Error -> {
+                is DataResult.Failure -> {
                     setState { copy(isPaginateLoading = false) }
                     sendEffect(HomeEffect.ShowError(result.throwable.message ?: "Unknown error"))
                 }
@@ -103,6 +107,5 @@ class HomeViewModel(
     }
 
     private fun selectCountry(country: Country) {
-        sendEffect(HomeEffect.NavigateToDetails(country))
-    }
+        navigator.navigateTo(NavRoute.Details(country))    }
 }

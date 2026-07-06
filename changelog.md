@@ -125,39 +125,58 @@ GetCountriesUseCase.kt - not needed anymore. I'm using searchCountries with empt
 
 ##  2026-07-2 - task/fetching-countries-from-rest-api
 Created sealed interface HomeUIState that helps managing UI state by making code cleaner
-### Added 
+### Added
 HomeUIState - sealed interface that keeps UI state
+
 DataResult - sealed interfaced used for API response enumeration
 ### Changed
+
 HomeState - removed Ui state variables and added ui state instance
+
 HomeScreen - Added when statement that determines ui state (what to draw)
+
 NetworkClient - Now uses OkHttpClient.builder() to generate engine
 
 ##  2026-07-2 - task/modular-architecture
 Restructured packages to modules according to MVI/UDF clean architecture.
+
 Also added nav3 to this pull request by mistake.
 ### Added
 NavRoute - implemented routes and transitions
 ### Changed
 MainActivity now uses nav3
+
 Restructured previous view model and data model to be suitable for nav3
 
 ##  2026-07-2 - task/replace-manual-di-with-Koin
 
 ### Added
+
 DomainModule
+
 NetworkModule
+
 DataModule
+
 HomeModule 
+
 Modules that define Koin dependencies
 
 ### Changed
+
 MviApplication
+
 MainActivity
+
+Navigation  was moved to core:ui:navigation and turned into dependency passed through Koin
 
 DI is now handled by Koin
 ### Removed
+
 AppContainer
+
 HomeContainer
+
 Those are not needed anymore since Koin was added
+
 Unused import statement from app/build.gradle.kts

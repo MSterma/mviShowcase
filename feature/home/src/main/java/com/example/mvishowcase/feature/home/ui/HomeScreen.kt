@@ -1,31 +1,21 @@
 package com.example.mvishowcase.feature.home.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.mvishowcase.core.model.Country
 import com.example.mvishowcase.feature.home.presentation.HomeIntent
 import com.example.mvishowcase.feature.home.presentation.HomeState
-import com.example.mvishowcase.feature.home.presentation.HomeViewModel
-import androidx.compose.material.icons.filled.Close
 import com.example.mvishowcase.feature.home.presentation.HomeUiState
+import com.example.mvishowcase.feature.home.presentation.HomeViewModel
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
@@ -114,87 +104,5 @@ fun HomeContent(
                 else -> {}
             }
         }
-    }
-}
-
-@Composable
-fun CountryList(
-    countries: List<Country>,
-    isPaginateLoading: Boolean,
-    onCountryClick: (Country) -> Unit,
-    onLoadMore: () -> Unit
-) {
-    val listState = rememberLazyListState()
-
-    LaunchedEffect(listState) {
-        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
-            .collect { lastVisibleIndex ->
-                if (lastVisibleIndex != null && lastVisibleIndex >= countries.size - 5) {
-                    onLoadMore()
-                }
-            }
-    }
-
-    LazyColumn(state = listState, modifier = Modifier.fillMaxSize()) {
-        items(
-            items = countries,
-            key = { it.id }
-        ) { country ->
-            ListItem(
-                headlineContent = { Text(country.name) },
-                leadingContent = {
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(country.flag)
-                            .crossfade(true)
-                            .build(),
-                        contentDescription = "Flag of ${country.name}",
-                        modifier = Modifier.size(40.dp)
-                    )
-                },
-                modifier = Modifier.clickable { onCountryClick(country) }
-            )
-            HorizontalDivider()
-        }
-
-        if (isPaginateLoading) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CountryDetail(country: Country, onBack: () -> Unit) {
-    BackHandler(onBack = onBack)
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(country.flag)
-                .crossfade(true)
-                .build(),
-            contentDescription = "Flag of ${country.name}",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = country.name, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Capital: ${country.capital}")
-        Text(text = "Population: ${country.population}")
     }
 }

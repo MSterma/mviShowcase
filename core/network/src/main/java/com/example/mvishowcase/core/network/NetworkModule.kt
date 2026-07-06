@@ -5,5 +5,5 @@ import org.koin.dsl.module
 
 val networkModule = module {
     single { NetworkClient.httpClient }
-    single(named("bearer_token")) { "" }
+    single(named("bearer_token")) { BuildConfig.REST_COUNTRIES_API_KEY }
 }

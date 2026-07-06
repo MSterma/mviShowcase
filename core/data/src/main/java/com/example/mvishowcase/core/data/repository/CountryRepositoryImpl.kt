@@ -33,7 +33,7 @@ class CountryRepositoryImpl(
 
             DataResult.Success(response.data.objects.map { it.toDomain() })
         } catch (e: Exception) {
-            DataResult.Error(e)
+            DataResult.Failure(e)
         }
     }
 }

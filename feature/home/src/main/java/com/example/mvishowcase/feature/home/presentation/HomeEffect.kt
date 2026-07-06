@@ -5,5 +5,4 @@ import com.example.mvishowcase.core.model.Country
 
 sealed class HomeEffect : UiEffect {
     data class ShowError(val message: String) : HomeEffect()
-    data class NavigateToDetails(val country: Country) : HomeEffect()
 }

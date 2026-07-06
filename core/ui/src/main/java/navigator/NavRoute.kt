@@ -1,4 +1,4 @@
-package com.example.mvishowcase.navigation
+package navigator
 
 import com.example.mvishowcase.core.model.Country
 import kotlinx.serialization.Serializable
