@@ -13,6 +13,10 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      - name: Decode google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $GOOGLE_SERVICES_JSON | base64 -d > app/google-services.json
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -24,7 +28,11 @@ jobs:
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
+      - name: Decode google-services.json
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo $GOOGLE_SERVICES_JSON | base64 -d > app/google-services.
+    
       - name: Build project
         # 'assembleDebug' sprawdza, czy projekt kompiluje się poprawnie (w tym kod Compose).
         # Jeśli chcesz również uruchamiać testy jednostkowe i lintera, zamień na: ./gradlew build
