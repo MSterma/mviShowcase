@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.android.library)
-    // id("org.jetbrains.kotlin.android")
 }
 
 android {
@@ -19,6 +18,7 @@ android {
 
 dependencies {
     implementation(libs.koin.core)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(project(":core:common"))
     implementation(project(":core:model"))
 }

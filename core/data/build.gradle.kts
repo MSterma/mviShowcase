@@ -20,6 +20,7 @@ android {
 
 dependencies {
     implementation(libs.koin.core)
+    implementation(libs.koin.android)
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:domain"))
@@ -28,8 +29,13 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.kotlinx.serialization.json)
 
+    testImplementation(libs.junit)
+
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
 }
