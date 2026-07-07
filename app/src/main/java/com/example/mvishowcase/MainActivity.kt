@@ -11,6 +11,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import com.example.mvishowcase.core.ui.R
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
@@ -49,10 +51,10 @@ class MainActivity : ComponentActivity() {
                                     topBar = {
                                         @OptIn(ExperimentalMaterial3Api::class)
                                         TopAppBar(
-                                            title = { Text("Country Details") },
+                                            title = { Text(stringResource(R.string.country_details_title)) },
                                             navigationIcon = {
                                                 IconButton(onClick = {navigator.goBack() }) {
-                                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_button_content_description))
                                                 }
                                             }
                                         )
@@ -66,7 +68,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             }
-                            else -> NavEntry(Unit) { Text("Unknown Route") }
+                            else -> NavEntry(Unit) { Text(stringResource(R.string.unknown_route)) }
                         }
                     }
                 )

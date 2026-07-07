@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.mvishowcase.core.ui.R
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,7 +30,7 @@ fun CountryDetail(country: Country, onBack: () -> Unit) {
                 .data(country.flag)
                 .crossfade(true)
                 .build(),
-            contentDescription = "Flag of ${country.name}",
+            contentDescription = stringResource(R.string.flag_content_description, country.name),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(200.dp)

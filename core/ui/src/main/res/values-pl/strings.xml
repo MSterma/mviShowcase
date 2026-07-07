@@ -1,0 +1,9 @@
+<resources>
+    <string name="country_details_title">Szczegóły kraju</string>
+    <string name="back_button_content_description">Wstecz</string>
+    <string name="unknown_route">Nieznana trasa</string>
+    <string name="search_countries_placeholder">Szukaj krajów…</string>
+    <string name="clear_search_content_description">Wyczyść</string>
+    <string name="crash_app_content_description">Zakończ aplikację</string>
+    <string name="flag_content_description">Flaga %1$s</string>
+</resources>
