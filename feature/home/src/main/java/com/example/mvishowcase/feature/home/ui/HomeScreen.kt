@@ -3,6 +3,7 @@ package com.example.mvishowcase.feature.home.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -73,6 +74,13 @@ fun HomeContent(
                     ) {
                     }
                 }
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { throw RuntimeException("Test Crash for Crashlytics") }
+            ) {
+                Icon(Icons.Default.BugReport, contentDescription = "Crash App")
             }
         }
     ) { padding ->
