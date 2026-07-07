@@ -8,6 +8,7 @@ import com.example.mvishowcase.di.navModule
 import com.example.mvishowcase.feature.home.di.homeModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.koin.workManagerFactory
 import org.koin.core.context.startKoin
 
 class MviApplication : Application() {
@@ -17,6 +18,7 @@ class MviApplication : Application() {
         startKoin {
             androidLogger()
             androidContext(this@MviApplication)
+            workManagerFactory()
             modules(
                 networkModule,
                 dataModule,

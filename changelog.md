@@ -180,3 +180,34 @@ HomeContainer
 Those are not needed anymore since Koin was added
 
 Unused import statement from app/build.gradle.kts
+
+##  2026-07-07 - task/offline-first-arch
+Implemented offline-first architecture using Room and WorkManager.
+
+### Added
+CountryDatabase: Room database implementation for local persistence.
+
+CountryEntity Database model for country data.
+
+CountryDao: Data Access Object with support for  Flow queries and upsert operations.
+
+OfflineFirstCountryRepository:  repository that uses Room as the Single Source of Truth.
+
+SyncRepository: New repository dedicated to orchestrating network-to-database synchronization.
+
+SyncWorker: WorkManager implementation for background data synchronization with exponential backoff and connectivity constraints. 
+
+SyncCountriesUseCase: Use case that triggers background synchronization via WorkManager. 
+
+EntityMapper: Mappers between domain models and database entities.
+
+EntityMapperTest: Unit tests for data mapping logic.
+
+### Changed
+CountryRepository: Refactored interface to be Flow based. 
+
+HomeViewModel: Updated to observe local database reactively and trigger background sync separately.
+
+DataModule: Updated Koin configuration to provide Room database, DAOs, and new repositories.
+
+libs.versions.toml Added Room and WorkManager dependencies.

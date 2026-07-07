@@ -1,18 +1,16 @@
 package com.example.mvishowcase.core.data.sync
 
 import android.content.Context
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
 import com.example.mvishowcase.core.common.result.DataResult
 import com.example.mvishowcase.core.domain.repository.SyncRepository
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 class SyncWorker(
     appContext: Context,
-    workerParams: WorkerParameters
-) : CoroutineWorker(appContext, workerParams), KoinComponent {
-
-    private val syncRepository: SyncRepository by inject()
+    workerParams: WorkerParameters,
+    private val syncRepository: SyncRepository
+) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
         val query = inputData.getString(KEY_QUERY) ?: ""
@@ -29,33 +27,5 @@ class SyncWorker(
         const val KEY_QUERY = "query"
         const val KEY_LIMIT = "limit"
         const val KEY_OFFSET = "offset"
-
-        fun startSync(context: Context, query: String, limit: Int, offset: Int) {
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
-
-            val syncData = workDataOf(
-                KEY_QUERY to query,
-                KEY_LIMIT to limit,
-                KEY_OFFSET to offset
-            )
-
-            val syncRequest = OneTimeWorkRequestBuilder<SyncWorker>()
-                .setConstraints(constraints)
-                .setBackoffCriteria(
-                    BackoffPolicy.EXPONENTIAL,
-                    WorkRequest.MIN_BACKOFF_MILLIS,
-                    java.util.concurrent.TimeUnit.MILLISECONDS
-                )
-                .setInputData(syncData)
-                .build()
-
-            WorkManager.getInstance(context).enqueueUniqueWork(
-                "sync_countries_${query}_${offset}",
-                ExistingWorkPolicy.REPLACE,
-                syncRequest
-            )
-        }
     }
 }
