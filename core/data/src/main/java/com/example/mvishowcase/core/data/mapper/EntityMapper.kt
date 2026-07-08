@@ -9,7 +9,8 @@ fun CountryEntity.toDomain(): Country {
         name = name,
         flag = flag,
         capital = capital,
-        population = population
+        population = population,
+        description = description
     )
 }
 
@@ -19,6 +20,7 @@ fun Country.toEntity(): CountryEntity {
         name = name,
         flag = flag,
         capital = capital,
-        population = population
+        population = population,
+        description = description
     )
 }

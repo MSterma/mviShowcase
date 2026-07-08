@@ -15,4 +15,8 @@ class OfflineFirstCountryRepository(
             entities.map { it.toDomain() }
         }
     }
+
+    override fun observeCountryById(id: String): Flow<Country?> {
+        return countryDao.getCountryByIdFlow(id).map { it?.toDomain() }
+    }
 }

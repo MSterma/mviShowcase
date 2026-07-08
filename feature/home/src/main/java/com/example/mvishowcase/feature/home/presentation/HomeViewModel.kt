@@ -4,11 +4,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.mvishowcase.core.common.mvi.BaseViewModel
 
 import com.example.mvishowcase.core.model.Country
+import com.example.mvishowcase.core.domain.usecase.GetCountryUIDetailUseCase
 import com.example.mvishowcase.core.domain.usecase.SearchCountriesUseCase
 import com.example.mvishowcase.core.domain.usecase.SyncCountriesUseCase
 import com.example.mvishowcase.core.ui.navigator.Navigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import navigator.NavRoute
@@ -17,8 +19,8 @@ import kotlin.time.Duration.Companion.milliseconds
 class HomeViewModel(
     private val searchCountriesUseCase: SearchCountriesUseCase,
     private val syncCountriesUseCase: SyncCountriesUseCase,
+    private val getCountryUIDetailUseCase: GetCountryUIDetailUseCase,
     private val navigator: Navigator
-
 ) : BaseViewModel<HomeState, HomeIntent, HomeEffect>(HomeState()) {
 
     private val pageSize = 25
@@ -98,5 +100,13 @@ class HomeViewModel(
     }
 
     private fun selectCountry(country: Country) {
-        navigator.navigateTo(NavRoute.Details(country))    }
+        viewModelScope.launch {
+            getCountryUIDetailUseCase.refreshDescription(country)
+            navigator.navigateTo(NavRoute.Details(country.id))
+        }
+    }
+
+    fun getCountryDetailStream(id: String): Flow<Country?> {
+        return getCountryUIDetailUseCase(id)
+    }
 }

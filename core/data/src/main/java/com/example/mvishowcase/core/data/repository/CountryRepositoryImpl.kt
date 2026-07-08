@@ -1,6 +1,5 @@
 package com.example.mvishowcase.core.data.repository
 
-
 import com.example.mvishowcase.core.data.mapper.toDomain
 import com.example.mvishowcase.core.data.model.CountryResponse
 import com.example.mvishowcase.core.model.Country
@@ -35,7 +34,12 @@ class CountryRepositoryImpl(
 
             emit(response.data.objects.map { it.toDomain() })
         } catch (e: Exception) {
+            e.printStackTrace()
             emit(emptyList())
         }
+    }
+
+    override fun observeCountryById(id: String): Flow<Country?> = flow {
+        emit(null)
     }
 }

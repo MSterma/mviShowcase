@@ -31,6 +31,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
+    testImplementation(libs.ktor.client.mock)
+    testImplementation(libs.ktor.client.content.negotiation)
+    testImplementation(libs.ktor.serialization.kotlinx.json)
+    testImplementation(libs.kotlinx.coroutines.core)
 
     // Room
     implementation(libs.androidx.room.runtime)

@@ -34,7 +34,7 @@ class SyncRepositoryImpl(
             }.body()
 
             val entities = response.data.objects.map { it.toDomain().toEntity() }
-            countryDao.upsertCountries(entities)
+            countryDao.upsertCountriesWithMerge(entities)
 
             DataResult.Success(Unit)
         } catch (e: Exception) {

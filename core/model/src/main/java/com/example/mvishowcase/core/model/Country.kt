@@ -8,5 +8,6 @@ data class Country(
     val name: String,
     val flag: String,
     val capital: String,
-    val population: Long
+    val population: Long,
+    val description: String? = null
 )

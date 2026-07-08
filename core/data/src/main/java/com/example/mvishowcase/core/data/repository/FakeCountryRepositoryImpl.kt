@@ -25,4 +25,8 @@ class FakeCountryRepositoryImpl : CountryRepository {
             }
         }
     }
+
+    override fun observeCountryById(id: String): Flow<Country?> {
+        return flowOf(allCountries.find { it.id == id })
+    }
 }
