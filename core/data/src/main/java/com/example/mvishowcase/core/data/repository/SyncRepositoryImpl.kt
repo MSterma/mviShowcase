@@ -1,24 +1,25 @@
 package com.example.mvishowcase.core.data.repository
 
+import com.example.mvishowcase.core.common.result.DataResult
+import com.example.mvishowcase.core.data.database.dao.CountryDao
 import com.example.mvishowcase.core.data.mapper.toDomain
+import com.example.mvishowcase.core.data.mapper.toEntity
 import com.example.mvishowcase.core.data.model.CountryResponse
-import com.example.mvishowcase.core.model.Country
-import com.example.mvishowcase.core.domain.repository.CountryRepository
+import com.example.mvishowcase.core.domain.repository.SyncRepository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.HttpHeaders
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
-class CountryRepositoryImpl(
+class SyncRepositoryImpl(
     private val httpClient: HttpClient,
+    private val countryDao: CountryDao,
     private val bearerToken: String
-) : CountryRepository {
+) : SyncRepository {
 
-    override fun getCountries(query: String): Flow<List<Country>> = flow {
-        try {
+    override suspend fun syncCountries(query: String, limit: Int, offset: Int): DataResult<Unit> {
+        return try {
             val endpoint = "https://api.restcountries.com/countries/v5"
 
             val response: CountryResponse = httpClient.get(endpoint) {
@@ -27,19 +28,17 @@ class CountryRepositoryImpl(
                     if (query.isNotEmpty()) {
                         parameters.append("q", query)
                     }
-                    parameters.append("limit", "25")
-                    parameters.append("offset", "0")
+                    parameters.append("limit", limit.toString())
+                    parameters.append("offset", offset.toString())
                 }
             }.body()
 
-            emit(response.data.objects.map { it.toDomain() })
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emit(emptyList())
-        }
-    }
+            val entities = response.data.objects.map { it.toDomain().toEntity() }
+            countryDao.upsertCountriesWithMerge(entities)
 
-    override fun observeCountryById(id: String): Flow<Country?> = flow {
-        emit(null)
+            DataResult.Success(Unit)
+        } catch (e: Exception) {
+            DataResult.Failure(e)
+        }
     }
 }

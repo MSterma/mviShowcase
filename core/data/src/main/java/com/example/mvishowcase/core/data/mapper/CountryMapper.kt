@@ -9,6 +9,7 @@ fun CountryDto.toDomain(): Country {
         name = names.common,
         flag = flag.urlPng,
         capital = capitals.find { it.attributes.primary }?.name ?: capitals.firstOrNull()?.name ?: "Unknown",
-        population = population
+        population = population,
+        description = null
     )
 }

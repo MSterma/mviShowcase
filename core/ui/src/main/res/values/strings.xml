@@ -1,0 +1,9 @@
+<resources>
+    <string name="country_details_title">Country Details</string>
+    <string name="back_button_content_description">Back</string>
+    <string name="unknown_route">Unknown Route</string>
+    <string name="search_countries_placeholder">Search countries…</string>
+    <string name="clear_search_content_description">Clear</string>
+    <string name="crash_app_content_description">Crash App</string>
+    <string name="flag_content_description">Flag of %1$s</string>
+</resources>

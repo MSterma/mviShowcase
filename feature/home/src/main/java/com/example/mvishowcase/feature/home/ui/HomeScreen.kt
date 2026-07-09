@@ -3,6 +3,7 @@ package com.example.mvishowcase.feature.home.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -12,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.compose.ui.res.stringResource
+import com.example.mvishowcase.core.ui.R
 import com.example.mvishowcase.feature.home.presentation.HomeIntent
 import com.example.mvishowcase.feature.home.presentation.HomeState
 import com.example.mvishowcase.feature.home.presentation.HomeUiState
@@ -57,12 +60,12 @@ fun HomeContent(
                                 onSearch = { },
                                 expanded = false,
                                 onExpandedChange = { },
-                                placeholder = { Text("Search countries...") },
+                                placeholder = { Text(stringResource(R.string.search_countries_placeholder)) },
                                 leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                                 trailingIcon = {
                                     if (state.searchQuery.isNotEmpty()) {
                                         IconButton(onClick = { onIntent(HomeIntent.SearchQueryChanged("")) }) {
-                                            Icon(Icons.Default.Close, contentDescription = "Clear")
+                                            Icon(Icons.Default.Close, contentDescription = stringResource(R.string.clear_search_content_description))
                                         }
                                     }
                                 }
@@ -73,6 +76,13 @@ fun HomeContent(
                     ) {
                     }
                 }
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { throw RuntimeException("Test Crash for Crashlytics") }
+            ) {
+                Icon(Icons.Default.BugReport, contentDescription = stringResource(R.string.crash_app_content_description))
             }
         }
     ) { padding ->

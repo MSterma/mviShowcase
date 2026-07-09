@@ -2,35 +2,58 @@ package com.example.mvishowcase.feature.home.presentation
 
 import androidx.lifecycle.viewModelScope
 import com.example.mvishowcase.core.common.mvi.BaseViewModel
-import com.example.mvishowcase.core.common.result.DataResult
+
 import com.example.mvishowcase.core.model.Country
+import com.example.mvishowcase.core.domain.usecase.GetCountryUIDetailUseCase
 import com.example.mvishowcase.core.domain.usecase.SearchCountriesUseCase
+import com.example.mvishowcase.core.domain.usecase.SyncCountriesUseCase
 import com.example.mvishowcase.core.ui.navigator.Navigator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import navigator.NavRoute
 import kotlin.time.Duration.Companion.milliseconds
 
 class HomeViewModel(
     private val searchCountriesUseCase: SearchCountriesUseCase,
+    private val syncCountriesUseCase: SyncCountriesUseCase,
+    private val getCountryUIDetailUseCase: GetCountryUIDetailUseCase,
     private val navigator: Navigator
-
 ) : BaseViewModel<HomeState, HomeIntent, HomeEffect>(HomeState()) {
 
     private val pageSize = 25
     private var searchJob: Job? = null
+    private var syncJob: Job? = null
+    private var observationJob: Job? = null
 
     init {
+        observeCountries()
         onIntent(HomeIntent.LoadCountries)
     }
 
     override fun onIntent(intent: HomeIntent) {
         when (intent) {
-            is HomeIntent.LoadCountries -> loadCountries()
+            is HomeIntent.LoadCountries -> syncCountries()
             is HomeIntent.LoadNextPage -> loadNextPage()
             is HomeIntent.SelectCountry -> selectCountry(intent.country)
             is HomeIntent.SearchQueryChanged -> onSearchQueryChanged(intent.query)
+        }
+    }
+
+    private fun observeCountries() {
+        observationJob?.cancel()
+        observationJob = viewModelScope.launch {
+            searchCountriesUseCase(uiState.value.searchQuery).collectLatest { countries ->
+                setState { 
+                    copy(
+                        countries = countries, 
+                        uiState = HomeUiState.Success,
+                        offset = countries.size
+                    )
+                }
+            }
         }
     }
 
@@ -39,12 +62,14 @@ class HomeViewModel(
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             delay(200.milliseconds)
-            loadCountries()
+            observeCountries()
+            syncCountries()
         }
     }
 
-    private fun loadCountries() {
-        viewModelScope.launch {
+    private fun syncCountries() {
+        syncJob?.cancel()
+        syncJob = viewModelScope.launch {
             val query = uiState.value.searchQuery
             setState { 
                 copy(
@@ -54,24 +79,7 @@ class HomeViewModel(
                 ) 
             }
             
-            when (val result = searchCountriesUseCase(query = query, limit = pageSize, offset = 0)) {
-                is DataResult.Success -> {
-                    val countries = result.data
-                    setState { 
-                        copy(
-                            uiState = HomeUiState.Success, 
-                            countries = countries, 
-                            offset = countries.size,
-                            hasReachedEnd = countries.size < pageSize
-                        ) 
-                    }
-                }
-                is DataResult.Failure -> {
-                    val errorMessage = result.throwable.message ?: "Unknown error"
-                    setState { copy(uiState = HomeUiState.Error(errorMessage)) }
-                    sendEffect(HomeEffect.ShowError(errorMessage))
-                }
-            }
+            syncCountriesUseCase(query = query, limit = pageSize, offset = 0)
         }
     }
 
@@ -81,31 +89,24 @@ class HomeViewModel(
 
         viewModelScope.launch {
             setState { copy(isPaginateLoading = true) }
-            
-            when (val result = searchCountriesUseCase(
+            syncCountriesUseCase(
                 query = currentState.searchQuery,
                 limit = pageSize, 
                 offset = currentState.offset
-            )) {
-                is DataResult.Success -> {
-                    val newCountries = result.data
-                    setState { 
-                        copy(
-                            isPaginateLoading = false, 
-                            countries = countries + newCountries, 
-                            offset = offset + newCountries.size,
-                            hasReachedEnd = newCountries.size < pageSize
-                        ) 
-                    }
-                }
-                is DataResult.Failure -> {
-                    setState { copy(isPaginateLoading = false) }
-                    sendEffect(HomeEffect.ShowError(result.throwable.message ?: "Unknown error"))
-                }
-            }
+            )
+            delay(500.milliseconds)
+            setState { copy(isPaginateLoading = false) }
         }
     }
 
     private fun selectCountry(country: Country) {
-        navigator.navigateTo(NavRoute.Details(country))    }
+        viewModelScope.launch {
+            getCountryUIDetailUseCase.refreshDescription(country)
+            navigator.navigateTo(NavRoute.Details(country.id))
+        }
+    }
+
+    fun getCountryDetailStream(id: String): Flow<Country?> {
+        return getCountryUIDetailUseCase(id)
+    }
 }

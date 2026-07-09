@@ -65,6 +65,7 @@ dependencies {
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
     implementation(libs.koin.compose)
+    implementation(libs.koin.androidx.workmanager)
     
     // Ktor
     implementation(libs.ktor.client.core)

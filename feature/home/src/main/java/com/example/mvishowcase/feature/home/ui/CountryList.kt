@@ -10,6 +10,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import com.example.mvishowcase.core.ui.R
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -46,7 +48,7 @@ fun CountryList(
                             .data(country.flag)
                             .crossfade(true)
                             .build(),
-                        contentDescription = "Flag of ${country.name}",
+                        contentDescription = stringResource(R.string.flag_content_description, country.name),
                         modifier = Modifier.size(40.dp)
                     )
                 },

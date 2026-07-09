@@ -20,6 +20,8 @@ android {
 
 dependencies {
     implementation(libs.koin.core)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.workmanager)
     implementation(project(":core:common"))
     implementation(project(":core:model"))
     implementation(project(":core:domain"))
@@ -28,8 +30,17 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.kotlinx.serialization.json)
 
+    testImplementation(libs.junit)
+    testImplementation(libs.ktor.client.mock)
+    testImplementation(libs.ktor.client.content.negotiation)
+    testImplementation(libs.ktor.serialization.kotlinx.json)
+    testImplementation(libs.kotlinx.coroutines.core)
+
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
+
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
 }
