@@ -19,11 +19,16 @@ import androidx.navigation3.runtime.NavEntry
 import androidx.navigation3.ui.NavDisplay
 import com.example.mvishowcase.core.ui.navigator.Navigator
 import com.example.mvishowcase.core.ui.theme.MviShowcaseTheme
+import com.example.mvishowcase.feature.auth.presentation.LoginViewModel
+import com.example.mvishowcase.feature.auth.ui.LoginScreen
+import com.example.mvishowcase.feature.auth.ui.RegisterScreen
 import com.example.mvishowcase.feature.home.presentation.HomeViewModel
 import com.example.mvishowcase.feature.home.ui.CountryDetail
 import com.example.mvishowcase.feature.home.ui.HomeScreen
+import com.example.mvishowcase.presentation.MainEffect
+import com.example.mvishowcase.presentation.MainViewModel
 import navigator.NavRoute
-import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
 
 class MainActivity : ComponentActivity() {
@@ -33,19 +38,44 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MviShowcaseTheme {
-                val navigator: Navigator= koinInject()
-                val homeViewModel: HomeViewModel = getViewModel<HomeViewModel>()
+                val navigator: Navigator = koinInject()
+                val mainViewModel: MainViewModel = koinViewModel()
+
+                LaunchedEffect(mainViewModel.effect) {
+                    mainViewModel.effect.collect { effect ->
+                        when (effect) {
+                            is MainEffect.NavigateTo -> navigator.resetTo(effect.route)
+                        }
+                    }
+                }
 
                 NavDisplay(
                     backStack = navigator.backStack,
-                    onBack = {navigator.goBack()},
+                    onBack = { navigator.goBack() },
                     entryProvider = { key ->
                         when (key) {
+                            is NavRoute.Login -> NavEntry(key) {
+                                val loginViewModel: LoginViewModel = koinViewModel()
+                                LoginScreen(
+                                    viewModel = loginViewModel,
+                                    onNavigateToHome = { navigator.resetTo(NavRoute.Home) },
+                                    onNavigateToRegister = { navigator.navigateTo(NavRoute.Register) }
+                                )
+                            }
+                            is NavRoute.Register -> NavEntry(key) {
+                                val loginViewModel: LoginViewModel = koinViewModel()
+                                RegisterScreen(
+                                    viewModel = loginViewModel,
+                                    onNavigateToHome = { navigator.resetTo(NavRoute.Home) },
+                                    onBack = { navigator.goBack() }
+                                )
+                            }
                             is NavRoute.Home -> NavEntry(key) {
-
+                                val homeViewModel: HomeViewModel = koinViewModel()
                                 HomeScreen(viewModel = homeViewModel)
                             }
                             is NavRoute.Details -> NavEntry(key) {
+                                val homeViewModel: HomeViewModel = koinViewModel()
                                 val countryDetail by homeViewModel.getCountryDetailStream(key.countryId)
                                     .collectAsStateWithLifecycle(null)
 
@@ -55,7 +85,7 @@ class MainActivity : ComponentActivity() {
                                         TopAppBar(
                                             title = { Text(stringResource(R.string.country_details_title)) },
                                             navigationIcon = {
-                                                IconButton(onClick = {navigator.goBack() }) {
+                                                IconButton(onClick = { navigator.goBack() }) {
                                                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_button_content_description))
                                                 }
                                             }

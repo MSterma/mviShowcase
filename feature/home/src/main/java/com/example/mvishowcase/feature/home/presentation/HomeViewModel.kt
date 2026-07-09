@@ -1,9 +1,10 @@
 package com.example.mvishowcase.feature.home.presentation
 
 import androidx.lifecycle.viewModelScope
-import com.example.mvishowcase.core.common.mvi.BaseViewModel
+import com.example.mvishowcase.core.common.base.BaseViewModel
 
 import com.example.mvishowcase.core.model.Country
+import com.example.mvishowcase.core.domain.repository.AuthRepository
 import com.example.mvishowcase.core.domain.usecase.GetCountryUIDetailUseCase
 import com.example.mvishowcase.core.domain.usecase.SearchCountriesUseCase
 import com.example.mvishowcase.core.domain.usecase.SyncCountriesUseCase
@@ -20,6 +21,7 @@ class HomeViewModel(
     private val searchCountriesUseCase: SearchCountriesUseCase,
     private val syncCountriesUseCase: SyncCountriesUseCase,
     private val getCountryUIDetailUseCase: GetCountryUIDetailUseCase,
+    private val authRepository: AuthRepository,
     private val navigator: Navigator
 ) : BaseViewModel<HomeState, HomeIntent, HomeEffect>(HomeState()) {
 
@@ -39,6 +41,13 @@ class HomeViewModel(
             is HomeIntent.LoadNextPage -> loadNextPage()
             is HomeIntent.SelectCountry -> selectCountry(intent.country)
             is HomeIntent.SearchQueryChanged -> onSearchQueryChanged(intent.query)
+            is HomeIntent.Logout -> logout()
+        }
+    }
+
+    private fun logout() {
+        viewModelScope.launch {
+            authRepository.signOut()
         }
     }
 
