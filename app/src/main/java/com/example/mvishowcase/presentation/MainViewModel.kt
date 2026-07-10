@@ -25,11 +25,11 @@ class MainViewModel(
             observeAuthStateUseCase().collectLatest { authState ->
                 if (authState == null) {
                     if (navigator.backStack.none { it is NavRoute.Login || it is NavRoute.Register }) {
-                        sendEffect(MainEffect.NavigateTo(NavRoute.Login))
+                        navigator.resetTo(NavRoute.Login)
                     }
                 } else {
                     if (navigator.backStack.isEmpty() || navigator.backStack.any { it is NavRoute.Login || it is NavRoute.Register }) {
-                        sendEffect(MainEffect.NavigateTo(NavRoute.Home))
+                        navigator.resetTo(NavRoute.Home)
                     }
                 }
             }
