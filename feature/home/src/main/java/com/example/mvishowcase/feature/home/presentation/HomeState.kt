@@ -1,6 +1,6 @@
 package com.example.mvishowcase.feature.home.presentation
 
-import com.example.mvishowcase.core.common.mvi.UiState
+import com.example.mvishowcase.core.common.base.UiState
 import com.example.mvishowcase.core.model.Country
 
 data class HomeState(

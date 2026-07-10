@@ -1,4 +1,4 @@
-package com.example.mvishowcase.core.common.mvi
+package com.example.mvishowcase.core.common.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

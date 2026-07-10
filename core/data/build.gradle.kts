@@ -29,6 +29,7 @@ dependencies {
     
     implementation(libs.ktor.client.core)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.coroutines.play.services)
 
     testImplementation(libs.junit)
     testImplementation(libs.ktor.client.mock)
@@ -43,4 +44,8 @@ dependencies {
 
     // WorkManager
     implementation(libs.androidx.work.runtime.ktx)
+
+    // Firebase
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.ui.auth)
 }

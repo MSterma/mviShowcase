@@ -2,6 +2,7 @@ package com.example.mvishowcase.core.data.di
 
 import androidx.room.Room
 import com.example.mvishowcase.core.data.database.CountryDatabase
+import com.example.mvishowcase.core.data.repository.AuthRepositoryImpl
 import com.example.mvishowcase.core.data.repository.CountryRepositoryImpl
 import com.example.mvishowcase.core.data.repository.OfflineFirstCountryRepository
 import com.example.mvishowcase.core.data.repository.SyncRepositoryImpl
@@ -11,24 +12,28 @@ import com.example.mvishowcase.core.data.sync.SyncWorker
 import com.example.mvishowcase.core.data.sync.SyncDescriptionWorker
 import com.example.mvishowcase.core.data.sync.WorkManagerSyncScheduler
 import com.example.mvishowcase.core.data.sync.WorkManagerWikipediaDescriptionScheduler
+import com.example.mvishowcase.core.domain.repository.AuthRepository
 import com.example.mvishowcase.core.domain.repository.CountryRepository
 import com.example.mvishowcase.core.domain.repository.SyncRepository
 import com.example.mvishowcase.core.domain.repository.WikipediaRepository
 import com.example.mvishowcase.core.domain.usecase.SyncCountriesUseCase
 import com.example.mvishowcase.core.domain.usecase.SyncScheduler
 import com.example.mvishowcase.core.domain.usecase.WikipediaDescriptionScheduler
+import com.google.firebase.auth.FirebaseAuth
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.workmanager.dsl.workerOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 val dataModule = module {
+    single { FirebaseAuth.getInstance() }
+    single<AuthRepository> { AuthRepositoryImpl(get()) }
     single {
         Room.databaseBuilder(
-            androidContext(),
-            CountryDatabase::class.java,
-            "country_db"
-        ).fallbackToDestructiveMigration()
+                androidContext(),
+                CountryDatabase::class.java,
+                "country_db"
+            ).fallbackToDestructiveMigration(false)
             .build()
     }
     single { get<CountryDatabase>().countryDao() }

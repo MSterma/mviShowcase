@@ -211,3 +211,19 @@ HomeViewModel: Updated to observe local database reactively and trigger backgrou
 DataModule: Updated Koin configuration to provide Room database, DAOs, and new repositories.
 
 libs.versions.toml Added Room and WorkManager dependencies.
+
+
+##  2026-07-08 - task/fetching-details-from-secondary-api
+Implemented fetching data from wikipedia's API.
+Added nullable description field to country's model.
+Description comes from WikipediaDTO and is synced with room when user clicks country on map.
+Sync is handled by new work manager.
+
+
+##  2026-07-09 - task/firebase-auth
+### Added
+New MainViewModel to handle global state of authorization
+
+Login/registration screens and loginViewModel 
+
+AuthRepository - to handle integration with firebase

@@ -3,6 +3,7 @@ package com.example.mvishowcase.feature.home.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
@@ -79,10 +80,19 @@ fun HomeContent(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { throw RuntimeException("Test Crash for Crashlytics") }
-            ) {
-                Icon(Icons.Default.BugReport, contentDescription = stringResource(R.string.crash_app_content_description))
+            Column(horizontalAlignment = Alignment.End) {
+                FloatingActionButton(
+                    onClick = { onIntent(HomeIntent.Logout) },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.Logout, contentDescription = "Logout")
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                FloatingActionButton(
+                    onClick = { throw RuntimeException("Test Crash for Crashlytics") }
+                ) {
+                    Icon(Icons.Default.BugReport, contentDescription = stringResource(R.string.crash_app_content_description))
+                }
             }
         }
     ) { padding ->
