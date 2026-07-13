@@ -58,7 +58,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `when sign in successful then navigate to home`() = runTest {
+    fun `when sign in successful then state is reset and navigate to home`() = runTest {
         val email = "test@example.com"
         val password = "password"
         viewModel.onIntent(LoginIntent.EmailChanged(email))
@@ -73,6 +73,9 @@ class LoginViewModelTest {
             advanceUntilIdle()
             
             assertEquals(LoginEffect.NavigateToHome, awaitItem())
+            // Verify state is reset to initial
+            assertEquals("", viewModel.uiState.value.email)
+            assertEquals("", viewModel.uiState.value.password)
             assertTrue(!viewModel.uiState.value.isLoading)
         }
     }

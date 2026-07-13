@@ -16,14 +16,27 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.res.stringResource
 import com.example.mvishowcase.core.ui.R
+import com.example.mvishowcase.feature.home.presentation.HomeEffect
 import com.example.mvishowcase.feature.home.presentation.HomeIntent
 import com.example.mvishowcase.feature.home.presentation.HomeState
 import com.example.mvishowcase.feature.home.presentation.HomeUiState
 import com.example.mvishowcase.feature.home.presentation.HomeViewModel
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun HomeScreen(viewModel: HomeViewModel) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(viewModel.effect) {
+        viewModel.effect.collectLatest { effect ->
+            when (effect) {
+                is HomeEffect.ShowError -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
+            }
+        }
+    }
 
     BackHandler(enabled = state.searchQuery.isNotEmpty()) {
         viewModel.onIntent(HomeIntent.SearchQueryChanged(""))
@@ -31,6 +44,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
 
     HomeContent(
         state = state,
+        snackbarHostState = snackbarHostState,
         onIntent = viewModel::onIntent
     )
 }
@@ -39,6 +53,7 @@ fun HomeScreen(viewModel: HomeViewModel) {
 @Composable
 fun HomeContent(
     state: HomeState,
+    snackbarHostState: SnackbarHostState,
     onIntent: (HomeIntent) -> Unit
 ) {
     Scaffold(
@@ -96,32 +111,38 @@ fun HomeContent(
             }
         }
     ) { padding ->
-        Box(modifier = Modifier
+        Column(modifier = Modifier
             .padding(padding)
             .fillMaxSize()) {
-            when (val uiState = state.uiState) {
-                is HomeUiState.Loading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
+            
+            SnackbarHost(hostState = snackbarHostState)
+            
+            Box(modifier = Modifier.weight(1f)) {
+                when (val uiState = state.uiState) {
+                    is HomeUiState.Loading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
 
-                is HomeUiState.Error -> {
-                    Text(
-                        text = uiState.message,
-                        color = Color.Red,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
+                    is HomeUiState.Error -> {
+                        Text(
+                            text = uiState.message,
+                            color = Color.Red,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
 
-                is HomeUiState.Success -> {
-                    CountryList(
-                        countries = state.countries,
-                        isPaginateLoading = state.isPaginateLoading,
-                        onCountryClick = { onIntent(HomeIntent.SelectCountry(it)) },
-                        onLoadMore = { onIntent(HomeIntent.LoadNextPage) }
-                    )
-                }
+                    is HomeUiState.Success -> {
+                        CountryList(
+                            countries = state.countries,
+                            isPaginateLoading = state.isPaginateLoading,
+                            hasReachedEnd = state.hasReachedEnd,
+                            onCountryClick = { onIntent(HomeIntent.SelectCountry(it)) },
+                            onLoadMore = { onIntent(HomeIntent.LoadNextPage) }
+                        )
+                    }
 
-                else -> {}
+                    else -> {}
+                }
             }
         }
     }

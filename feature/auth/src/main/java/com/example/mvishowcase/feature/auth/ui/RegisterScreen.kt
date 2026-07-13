@@ -25,6 +25,10 @@ fun RegisterScreen(
 ) {
     val state by viewModel.uiState.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.onIntent(LoginIntent.ResetState)
+    }
+
     LaunchedEffect(viewModel.effect) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {

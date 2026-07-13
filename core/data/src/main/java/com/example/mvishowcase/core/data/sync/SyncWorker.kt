@@ -19,7 +19,7 @@ class SyncWorker(
 
         return when (syncRepository.syncCountries(query, limit, offset)) {
             is DataResult.Success -> Result.success()
-            is DataResult.Failure -> Result.retry()
+            is DataResult.Failure -> Result.failure()
         }
     }
 
