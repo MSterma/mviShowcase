@@ -21,15 +21,21 @@ import com.example.mvishowcase.core.model.Country
 fun CountryList(
     countries: List<Country>,
     isPaginateLoading: Boolean,
+    hasReachedEnd: Boolean,
     onCountryClick: (Country) -> Unit,
     onLoadMore: () -> Unit
 ) {
     val listState = rememberLazyListState()
 
-    LaunchedEffect(listState) {
+    LaunchedEffect(listState, isPaginateLoading, hasReachedEnd, countries) {
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
             .collect { lastVisibleIndex ->
-                if (lastVisibleIndex != null && lastVisibleIndex >= countries.size - 5) {
+                if (lastVisibleIndex != null && 
+                    lastVisibleIndex >= countries.size - 1 && 
+                    !isPaginateLoading && 
+                    !hasReachedEnd && 
+                    countries.isNotEmpty()
+                ) {
                     onLoadMore()
                 }
             }

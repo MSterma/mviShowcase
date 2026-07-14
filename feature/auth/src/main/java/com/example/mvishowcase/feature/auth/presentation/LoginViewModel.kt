@@ -16,7 +16,7 @@ class LoginViewModel(
             is LoginIntent.SignInClicked -> signIn()
             is LoginIntent.RegisterClicked -> register()
             is LoginIntent.ClearError -> setState { copy(error = null) }
-             is LoginIntent.ResetState -> setState { LoginState() }
+            is LoginIntent.ResetState -> resetState()
         }
     }
 
@@ -33,7 +33,7 @@ class LoginViewModel(
             setState { copy(isLoading = true, error = null) }
             authRepository.signIn(email, password)
                 .onSuccess {
-                    setState { copy(isLoading = false) }
+                    resetState()
                     sendEffect(LoginEffect.NavigateToHome)
                 }
                 .onFailure { error ->
@@ -61,7 +61,7 @@ class LoginViewModel(
             setState { copy(isLoading = true, error = null) }
             authRepository.signUp(email, password)
                 .onSuccess {
-                    setState { copy(isLoading = false) }
+                    resetState()
                     sendEffect(LoginEffect.NavigateToHome)
                 }
                 .onFailure { error ->

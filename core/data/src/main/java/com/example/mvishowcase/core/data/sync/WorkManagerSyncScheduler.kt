@@ -30,9 +30,12 @@ class WorkManagerSyncScheduler(
             .setInputData(syncData)
             .build()
 
+        val workName = if (offset == 0) "sync_countries_search" else "sync_countries_pagination_${query}_${offset}"
+        val policy = if (offset == 0) ExistingWorkPolicy.REPLACE else ExistingWorkPolicy.KEEP
+
         WorkManager.getInstance(context).enqueueUniqueWork(
-            "sync_countries_${query}_${offset}",
-            ExistingWorkPolicy.REPLACE,
+            workName,
+            policy,
             syncRequest
         )
     }

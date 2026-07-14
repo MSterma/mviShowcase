@@ -21,4 +21,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(project(":core:common"))
     implementation(project(":core:model"))
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }

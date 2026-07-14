@@ -10,7 +10,7 @@ interface UiIntent
 interface UiEffect
 
 abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect>(
-    initialState: S
+    private val initialState: S
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(initialState)
@@ -23,6 +23,10 @@ abstract class BaseViewModel<S : UiState, I : UiIntent, E : UiEffect>(
 
     protected fun setState(reducer: S.() -> S) {
         _uiState.update(reducer)
+    }
+
+    protected fun resetState() {
+        _uiState.value = initialState
     }
 
     protected fun sendEffect(effect: E) {

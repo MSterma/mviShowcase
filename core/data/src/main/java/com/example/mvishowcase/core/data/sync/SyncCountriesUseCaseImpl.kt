@@ -7,6 +7,10 @@ class SyncCountriesUseCaseImpl(
     private val scheduler: SyncScheduler
 ) : SyncCountriesUseCase {
     override fun invoke(query: String, limit: Int, offset: Int) {
-        scheduler.scheduleSync(query, limit, offset)
+        try {
+            scheduler.scheduleSync(query, limit, offset)
+        } catch (e: Exception) {
+            throw e
+        }
     }
 }
